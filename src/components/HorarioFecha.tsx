@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface HorarioFechaProps {
   horaDesde: string;
@@ -8,36 +8,53 @@ interface HorarioFechaProps {
 }
 
 export const HorarioFecha: React.FC<HorarioFechaProps> = ({
-  horaDesde,
+  horaDesde: horaDesdeProp,
   onHoraDesdeChange,
-  horaHasta,
+  horaHasta: horaHastaProp,
   onHoraHastaChange,
 }) => {
   const hoy = new Date().toLocaleDateString();
+  const [horaDesdeLocal, setHoraDesdeLocal] = useState<string>('');
+  const [horaHastaLocal, setHoraHastaLocal] = useState<string>('');
+
+  useEffect(() => {
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    if (!horaDesdeProp) {
+      setHoraDesdeLocal(currentTime);
+      onHoraDesdeChange({ target: { value: currentTime } } as React.ChangeEvent<HTMLInputElement>);
+    }
+    if (!horaHastaProp) {
+      setHoraHastaLocal(currentTime);
+      onHoraHastaChange({ target: { value: currentTime } } as React.ChangeEvent<HTMLInputElement>);
+    }
+  }, [horaDesdeProp, horaHastaProp, onHoraDesdeChange, onHoraHastaChange]);
 
   return (
-    <div>
-      <div>
+    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+      <div style={{ flex: 1 }}>
         <label htmlFor="horaDesde">Hora Desde:</label>
         <input
           type="time"
           id="horaDesde"
-          value={horaDesde}
+          value={horaDesdeProp || horaDesdeLocal}
           onChange={onHoraDesdeChange}
+          style={{ width: '100%' }}
         />
       </div>
-      <div>
+      <div style={{ flex: 1 }}>
         <label htmlFor="horaHasta">Hora Hasta:</label>
         <input
           type="time"
           id="horaHasta"
-          value={horaHasta}
+          value={horaHastaProp || horaHastaLocal}
           onChange={onHoraHastaChange}
+          style={{ width: '100%' }}
         />
       </div>
-      <div>
+      <div style={{ flex: 1 }}>
         <label>Fecha:</label>
-        <input type="text" value={hoy} readOnly />
+        <input type="text" value={hoy} readOnly style={{ width: '100%' }} />
       </div>
     </div>
   );
