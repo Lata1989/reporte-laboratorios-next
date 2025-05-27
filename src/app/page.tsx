@@ -1,3 +1,90 @@
+'use client';
+
+import { useState } from 'react';
+import { DocenteInfo } from '@/components/DocenteInfo';
+import { HorarioFecha } from '@/components/HorarioFecha';
+import { ReporteMaquinas } from '@/components/ReporteMaquinas';
+
+interface Reporte {
+  alumno?: string;
+  observacion?: string;
+}
+
+interface Reportes {
+  [key: string]: Reporte | undefined;
+}
+
+export default function Home() {
+  const [nombreDocente, setNombreDocente] = useState('');
+  const [laboratorio, setLaboratorio] = useState('');
+  const [horaDesde, setHoraDesde] = useState('');
+  const [horaHasta, setHoraHasta] = useState('');
+  const [reportes, setReportes] = useState<Reportes>({});
+  const laboratoriosDisponibles: string[] = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3'];
+
+  const handleNombreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNombreDocente(event.target.value);
+  };
+
+  const handleLaboratorioChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setLaboratorio(event.target.value);
+  };
+
+  const handleHoraDesdeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHoraDesde(event.target.value);
+  };
+
+  const handleHoraHastaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHoraHasta(event.target.value);
+  };
+
+  const handleReporteChange = (maquinaId: string, campo: keyof Reporte, valor: string) => {
+    setReportes((prevReportes) => ({
+      ...prevReportes,
+      [maquinaId]: {
+        ...prevReportes[maquinaId],
+        [campo]: valor,
+      },
+    }));
+  };
+
+  const enviarCorreo = () => {
+    const formData = {
+      nombreDocente,
+      laboratorio,
+      horaDesde,
+      horaHasta,
+      fecha: new Date().toLocaleDateString(),
+      reportes,
+    };
+
+    console.log('Datos a enviar por correo:', formData);
+    alert('La funcionalidad de envío de correo se implementaría aquí.');
+  };
+
+  return (
+    <div>
+      <h1>Reporte de Laboratorio</h1>
+      <DocenteInfo
+        onNombreChange={handleNombreChange}
+        nombreDocente={nombreDocente}
+        laboratorio={laboratorio}
+        onLaboratorioChange={handleLaboratorioChange}
+        laboratorios={laboratoriosDisponibles}
+      />
+      <HorarioFecha
+        horaDesde={horaDesde}
+        onHoraDesdeChange={handleHoraDesdeChange}
+        horaHasta={horaHasta}
+        onHoraHastaChange={handleHoraHastaChange}
+      />
+      <ReporteMaquinas reportes={reportes} onReporteChange={handleReporteChange} />
+      <button onClick={enviarCorreo}>Enviar Reporte por Correo</button>
+    </div>
+  );
+}
+
+/*
 import Image from "next/image";
 
 export default function Home() {
@@ -101,3 +188,4 @@ export default function Home() {
     </div>
   );
 }
+*/
