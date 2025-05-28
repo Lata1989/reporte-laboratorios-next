@@ -12,6 +12,7 @@ interface ReporteDB {
   reporte: {
     alumno?: string;
     observacion?: string;
+    numeroMaquina?: string; // Nuevo campo
   };
   createdAt: Date;
 }
@@ -23,6 +24,7 @@ interface CSVRow {
   HoraDesde: string;
   HoraHasta: string;
   Alumno: string;
+  NumeroMaquina: string; // Nuevo campo
   Observacion: string;
   CreatedAt: string;
 }
@@ -75,6 +77,7 @@ export async function POST() {
       HoraDesde: reporte.horaDesde,
       HoraHasta: reporte.horaHasta,
       Alumno: reporte.reporte?.alumno || '',
+      NumeroMaquina: reporte.reporte?.numeroMaquina || '', // Incluimos el número de máquina
       Observacion: reporte.reporte?.observacion || '',
       CreatedAt: reporte.createdAt.toLocaleString(),
     }));

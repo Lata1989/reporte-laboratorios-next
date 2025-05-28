@@ -19,7 +19,6 @@ export const DocenteInfo: React.FC<DocenteInfoProps> = ({
   const laboratoriosMap = {
     lab1: 'Laboratorio pcs Trinitarios',
     lab2: 'Laboratorio pcs Leibnitz',
-    lab3: 'Laboratorio pcs ciclo basico',
     // Puedes agregar más laboratorios aquí
   };
 

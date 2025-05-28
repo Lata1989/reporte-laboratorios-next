@@ -14,6 +14,7 @@ interface ReporteData {
   reporte: {
     alumno?: string;
     observacion?: string;
+    numeroMaquina?: string; // Nuevo campo
   };
   createdAt?: string;
 }
@@ -114,7 +115,7 @@ function ReportesList() {
     <ul className="list-disc pl-6 text-gray-700">
       {reportes.map(reporte => (
         <li key={reporte._id}>
-          {reporte.nombreDocente} - {reporte.laboratorio} ({reporte.fecha})
+          {reporte.nombreDocente} - {reporte.laboratorio} ({reporte.fecha}) - Máquina: {reporte.reporte?.numeroMaquina || 'N/A'}
         </li>
       ))}
     </ul>

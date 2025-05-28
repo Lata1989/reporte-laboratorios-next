@@ -10,6 +10,7 @@ import { Footer } from '@/components/Footer';
 interface Reporte {
     alumno?: string;
     observacion?: string;
+    numeroMaquina?: string; // Nuevo campo
 }
 
 export default function Home() {
@@ -17,9 +18,10 @@ export default function Home() {
     const [laboratorio, setLaboratorio] = useState('');
     const [horaDesde, setHoraDesde] = useState('');
     const [horaHasta, setHoraHasta] = useState('');
-    const [reporte, setReporte] = useState<Reporte>({});
+    const [reporte, setReporte] = useState<Reporte>({}); // Actualizamos el tipo de estado
     const [errorLaboratorio, setErrorLaboratorio] = useState('');
     const [errorHorario, setErrorHorario] = useState('');
+    const [errorNombreDocente, setErrorNombreDocente] = useState(''); // Nuevo estado de error
 
     const handleNombreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNombreDocente(event.target.value);
@@ -27,17 +29,17 @@ export default function Home() {
 
     const handleLaboratorioChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setLaboratorio(event.target.value);
-        setErrorLaboratorio(''); // Limpiar el error al cambiar el laboratorio
+        setErrorLaboratorio('');
     };
 
     const handleHoraDesdeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHoraDesde(event.target.value);
-        setErrorHorario(''); // Limpiar el error al cambiar la hora de inicio
+        setErrorHorario('');
     };
 
     const handleHoraHastaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHoraHasta(event.target.value);
-        setErrorHorario(''); // Limpiar el error al cambiar la hora de fin
+        setErrorHorario('');
     };
 
     const handleReporteChange = (campo: keyof Reporte, valor: string) => {
@@ -51,8 +53,14 @@ export default function Home() {
         e.preventDefault();
         setErrorLaboratorio('');
         setErrorHorario('');
+        setErrorNombreDocente(''); // Reiniciar error del nombre
 
         let isValid = true;
+
+        if (!nombreDocente) {
+            setErrorNombreDocente('Por favor, ingresa el nombre del docente.');
+            isValid = false;
+        }
 
         if (!laboratorio) {
             setErrorLaboratorio('Por favor, selecciona un laboratorio.');
@@ -74,7 +82,7 @@ export default function Home() {
             horaDesde,
             horaHasta,
             fecha: new Date().toLocaleDateString(),
-            reporte: { ...reporte },
+            reporte: { ...reporte }, // El reporte ahora incluye numeroMaquina
         };
 
         try {
@@ -110,14 +118,15 @@ export default function Home() {
     };
 
     return (
-        <div>
-            <h1>Reporte de Laboratorio</h1>
+        <div className="p-4"> {/* Añadimos un poco de padding al contenedor principal */}
+            <h1 className="text-3xl font-semibold text-center mb-6">Reporte de laboratorio</h1> {/* Centramos y damos margen inferior */}
             <DocenteInfo
                 onNombreChange={handleNombreChange}
                 nombreDocente={nombreDocente}
                 laboratorio={laboratorio}
                 onLaboratorioChange={handleLaboratorioChange}
             />
+            {errorNombreDocente && <p className="text-red-500">{errorNombreDocente}</p>}
             {errorLaboratorio && <p className="text-red-500">{errorLaboratorio}</p>}
             <HorarioFecha
                 horaDesde={horaDesde}
@@ -128,9 +137,11 @@ export default function Home() {
             {errorHorario && <p className="text-red-500">{errorHorario}</p>}
             <ReporteMaquinas reporte={reporte} onReporteChange={handleReporteChange} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                <button onClick={guardarInforme}>Guardar Informe</button>
+                <button onClick={guardarInforme} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar Informe</button> {/* Estilo básico del botón */}
             </div>
-            <Footer developerName="Pablo Alejandro de la Iglesia" />
+            <div className="mt-8">
+                <Footer developerName="Pablo Alejandro de la Iglesia" />
+            </div>
         </div>
     );
 }
