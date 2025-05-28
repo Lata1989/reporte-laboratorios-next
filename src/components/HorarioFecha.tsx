@@ -33,7 +33,7 @@ export const HorarioFecha: React.FC<HorarioFechaProps> = ({
   return (
     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
       <div style={{ flex: 1 }}>
-        <label htmlFor="horaDesde">Hora Desde:</label>
+        <label htmlFor="horaDesde">Hora desde:</label>
         <input
           type="time"
           id="horaDesde"
@@ -43,7 +43,7 @@ export const HorarioFecha: React.FC<HorarioFechaProps> = ({
         />
       </div>
       <div style={{ flex: 1 }}>
-        <label htmlFor="horaHasta">Hora Hasta:</label>
+        <label htmlFor="horaHasta">Hora hasta:</label>
         <input
           type="time"
           id="horaHasta"

@@ -12,17 +12,14 @@ interface Reporte {
     observacion?: string;
 }
 
-interface Reportes {
-    [key: string]: Reporte | undefined;
-}
-
 export default function Home() {
     const [nombreDocente, setNombreDocente] = useState('');
     const [laboratorio, setLaboratorio] = useState('');
     const [horaDesde, setHoraDesde] = useState('');
     const [horaHasta, setHoraHasta] = useState('');
-    const [reportes, setReportes] = useState<Reportes>({});
-    const laboratoriosDisponibles: string[] = ['Laboratorio 1', 'Laboratorio 2', 'Laboratorio 3'];
+    const [reporte, setReporte] = useState<Reporte>({});
+    const [errorLaboratorio, setErrorLaboratorio] = useState('');
+    const [errorHorario, setErrorHorario] = useState('');
 
     const handleNombreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNombreDocente(event.target.value);
@@ -30,28 +27,46 @@ export default function Home() {
 
     const handleLaboratorioChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setLaboratorio(event.target.value);
+        setErrorLaboratorio(''); // Limpiar el error al cambiar el laboratorio
     };
 
     const handleHoraDesdeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHoraDesde(event.target.value);
+        setErrorHorario(''); // Limpiar el error al cambiar la hora de inicio
     };
 
     const handleHoraHastaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setHoraHasta(event.target.value);
+        setErrorHorario(''); // Limpiar el error al cambiar la hora de fin
     };
 
-    const handleReporteChange = (maquinaId: string, campo: keyof Reporte, valor: string) => {
-        setReportes((prevReportes) => ({
-            ...prevReportes,
-            [maquinaId]: {
-                ...prevReportes[maquinaId],
-                [campo]: valor,
-            },
+    const handleReporteChange = (campo: keyof Reporte, valor: string) => {
+        setReporte((prevReporte) => ({
+            ...prevReporte,
+            [campo]: valor,
         }));
     };
 
-    const enviarCorreo = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const guardarInforme = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        setErrorLaboratorio('');
+        setErrorHorario('');
+
+        let isValid = true;
+
+        if (!laboratorio) {
+            setErrorLaboratorio('Por favor, selecciona un laboratorio.');
+            isValid = false;
+        }
+
+        if (horaHasta && horaDesde && horaHasta <= horaDesde) {
+            setErrorHorario('La hora de finalización debe ser posterior a la hora de inicio.');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
 
         const formData = {
             nombreDocente,
@@ -59,15 +74,11 @@ export default function Home() {
             horaDesde,
             horaHasta,
             fecha: new Date().toLocaleDateString(),
-            reportes: Object.entries(reportes).map(([maquina, reporte]) => ({
-                maquina,
-                alumno: reporte?.alumno || '',
-                observacion: reporte?.observacion || '',
-            })),
+            reporte: { ...reporte },
         };
 
         try {
-            const response = await fetch('/api/email-report', {
+            const response = await fetch('/api/guardar-informe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,14 +88,20 @@ export default function Home() {
 
             if (!response.ok) {
                 const errorResult = await response.text();
-                console.error('Error del backend:', errorResult);
-                alert(`Error al enviar el reporte: ${errorResult || 'Error desconocido'}`);
+                console.error('Error del backend al guardar:', errorResult);
+                alert(`Error al guardar el informe: ${errorResult || 'Error desconocido'}`);
                 return;
             }
 
             const result = await response.json();
-            console.log('Respuesta del backend:', result);
-            alert('Reporte enviado por correo electrónico con archivo Excel!');
+            console.log('Informe guardado exitosamente:', result);
+            alert('Informe guardado correctamente en la base de datos!');
+
+            setNombreDocente('');
+            setLaboratorio('');
+            setHoraDesde('');
+            setHoraHasta('');
+            setReporte({});
 
         } catch (error) {
             console.error('Error al comunicarse con el backend:', error);
@@ -100,17 +117,18 @@ export default function Home() {
                 nombreDocente={nombreDocente}
                 laboratorio={laboratorio}
                 onLaboratorioChange={handleLaboratorioChange}
-                laboratorios={laboratoriosDisponibles}
             />
+            {errorLaboratorio && <p className="text-red-500">{errorLaboratorio}</p>}
             <HorarioFecha
                 horaDesde={horaDesde}
                 onHoraDesdeChange={handleHoraDesdeChange}
                 horaHasta={horaHasta}
                 onHoraHastaChange={handleHoraHastaChange}
             />
-            <ReporteMaquinas reportes={reportes} onReporteChange={handleReporteChange} />
+            {errorHorario && <p className="text-red-500">{errorHorario}</p>}
+            <ReporteMaquinas reporte={reporte} onReporteChange={handleReporteChange} />
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
-                <button onClick={enviarCorreo}>Enviar reporte por email</button>
+                <button onClick={guardarInforme}>Guardar Informe</button>
             </div>
             <Footer developerName="Pablo Alejandro de la Iglesia" />
         </div>
