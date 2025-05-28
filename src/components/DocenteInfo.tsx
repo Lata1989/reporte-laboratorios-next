@@ -26,7 +26,7 @@ export const DocenteInfo: React.FC<DocenteInfoProps> = ({
   const laboratoriosArray = Object.values(laboratoriosMap);
 
   return (
-    <div>
+    <>
       <div>
         <label htmlFor="nombreDocente">Nombre del docente:</label>
         <input
@@ -45,6 +45,6 @@ export const DocenteInfo: React.FC<DocenteInfoProps> = ({
           ))}
         </select>
       </div>
-    </div>
+    </>
   );
 };
