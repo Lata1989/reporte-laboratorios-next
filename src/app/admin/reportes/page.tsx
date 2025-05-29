@@ -92,7 +92,7 @@ function ReportesList() {
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full w-full bg-white shadow-md rounded-lg"> {/* Añadido w-full */}
+      <table className="min-w-full w-full bg-white shadow-md rounded-lg">
         <thead className="bg-gray-100">
           <tr>
             <th className="px-4 py-2 text-left text-gray-700">Docente</th>
@@ -107,7 +107,7 @@ function ReportesList() {
         </thead>
         <tbody>
           {reportes.map(reporte => (
-            <tr key={reporte._id} className="hover:bg-gray-50 text-gray-800"> {/* Añadido text-gray-800 a la fila */}
+            <tr key={reporte._id} className="hover:bg-gray-50 text-gray-800">
               <td className="px-4 py-2">{reporte.nombreDocente}</td>
               <td className="px-4 py-2">{reporte.laboratorio}</td>
               <td className="px-4 py-2">{reporte.fecha}</td>
@@ -126,10 +126,10 @@ function ReportesList() {
 
 export default function EnviarReporteEmailPage() {
   return (
-    <div className="min-h-screen flex flex-col"> {/* Quitamos bg-gray-100 y justify-center sm:py-12 */}
-      <div className="relative py-3 w-full"> {/* Añadido w-full */}
+    <div className="min-h-screen flex flex-col">
+      <div className="relative py-3 w-full">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20 mx-auto max-w-7xl"> {/* Añadido mx-auto max-w-7xl para centrar el contenido y limitar su ancho máximo */}
+        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20 mx-auto max-w-7xl">
           <h1 className="text-2xl font-semibold text-gray-800 text-center mb-6">
             Enviar reporte por correo
           </h1>
