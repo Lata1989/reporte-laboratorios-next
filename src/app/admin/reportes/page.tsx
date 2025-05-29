@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { Footer } from '@/components/Footer'; // Importa el Footer
+import React, { useState, useEffect } from 'react';
+import { Footer } from '@/components/Footer'; // Asegúrate de que la ruta al Footer sea correcta
 
 interface ReporteData {
   _id: string;
@@ -14,7 +13,7 @@ interface ReporteData {
   reporte: {
     alumno?: string;
     observacion?: string;
-    numeroMaquina?: string; // Nuevo campo
+    numeroMaquina?: string;
   };
   createdAt?: string;
 }
@@ -43,47 +42,13 @@ async function enviarReportePorEmail() {
     } else {
       alert(`Error al enviar el reporte por email: ${result.error}`);
     }
-  } catch (error: unknown) { // Cambiamos a 'unknown'
-    // Hacemos una verificación de tipo para acceder a 'message'
+  } catch (error: unknown) {
     if (error instanceof Error) {
       alert(`Error al comunicarse con el servidor: ${error.message}`);
     } else {
       alert('Error al comunicarse con el servidor: Error desconocido.');
     }
   }
-}
-
-export default function EnviarReporteEmailPage() {
-  return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl sm:mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <h1 className="text-2xl font-semibold text-gray-800 text-center mb-6">
-            Enviar Reporte Completo
-          </h1>
-          <p className="text-gray-600 mb-4 text-center">
-            Haz clic en el botón para generar y enviar un reporte de todos los informes guardados por correo electrónico.
-          </p>
-          <div className="flex justify-center mb-6">
-            <button
-              onClick={enviarReportePorEmail}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Enviar Reporte por Email
-            </button>
-          </div>
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Reportes Guardados</h2>
-            <ReportesList />
-          </div>
-        </div>
-      </div>
-      <div className="mt-8"> {/* Agregamos margen superior aquí al contenedor del Footer */}
-        <Footer developerName="Pablo Alejandro de la Iglesia" />
-      </div>
-    </div>
-  );
 }
 
 function ReportesList() {
@@ -98,7 +63,6 @@ function ReportesList() {
         setIsLoading(false);
       })
       .catch(err => {
-        // También aplicamos la misma lógica aquí
         if (err instanceof Error) {
           setError(err.message);
         } else {
@@ -111,13 +75,84 @@ function ReportesList() {
   if (isLoading) return <p className="text-gray-600 text-center">Cargando reportes...</p>;
   if (error) return <p className="text-red-500 text-center">Error al cargar los reportes: {error}</p>;
 
+  const formatAlumnos = (alumnos?: string): React.ReactNode => {
+    if (!alumnos) return 'N/A';
+    const alumnosArray = alumnos.split(',').map(alumno => alumno.trim());
+    if (alumnosArray.length === 1) {
+      return alumnosArray[0];
+    }
+    return (
+      <ul>
+        {alumnosArray.map((alumno, index) => (
+          <li key={index} className="text-gray-800">{alumno}</li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
-    <ul className="list-disc pl-6 text-gray-700">
-      {reportes.map(reporte => (
-        <li key={reporte._id}>
-          {reporte.nombreDocente} - {reporte.laboratorio} ({reporte.fecha}) - Máquina: {reporte.reporte?.numeroMaquina || 'N/A'}
-        </li>
-      ))}
-    </ul>
+    <div className="overflow-x-auto">
+      <table className="min-w-full w-full bg-white shadow-md rounded-lg"> {/* Añadido w-full */}
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="px-4 py-2 text-left text-gray-700">Docente</th>
+            <th className="px-4 py-2 text-left text-gray-700">Laboratorio</th>
+            <th className="px-4 py-2 text-left text-gray-700">Fecha</th>
+            <th className="px-4 py-2 text-left text-gray-700">Hora Desde</th>
+            <th className="px-4 py-2 text-left text-gray-700">Hora Hasta</th>
+            <th className="px-4 py-2 text-left text-gray-700">Máquina</th>
+            <th className="px-4 py-2 text-left text-gray-700">Alumnos</th>
+            <th className="px-4 py-2 text-left text-gray-700">Observación</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reportes.map(reporte => (
+            <tr key={reporte._id} className="hover:bg-gray-50 text-gray-800"> {/* Añadido text-gray-800 a la fila */}
+              <td className="px-4 py-2">{reporte.nombreDocente}</td>
+              <td className="px-4 py-2">{reporte.laboratorio}</td>
+              <td className="px-4 py-2">{reporte.fecha}</td>
+              <td className="px-4 py-2">{reporte.horaDesde}</td>
+              <td className="px-4 py-2">{reporte.horaHasta}</td>
+              <td className="px-4 py-2">{reporte.reporte?.numeroMaquina || 'N/A'}</td>
+              <td className="px-4 py-2">{formatAlumnos(reporte.reporte?.alumno)}</td>
+              <td className="px-4 py-2">{reporte.reporte?.observacion || 'N/A'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default function EnviarReporteEmailPage() {
+  return (
+    <div className="min-h-screen flex flex-col"> {/* Quitamos bg-gray-100 y justify-center sm:py-12 */}
+      <div className="relative py-3 w-full"> {/* Añadido w-full */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
+        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20 mx-auto max-w-7xl"> {/* Añadido mx-auto max-w-7xl para centrar el contenido y limitar su ancho máximo */}
+          <h1 className="text-2xl font-semibold text-gray-800 text-center mb-6">
+            Enviar reporte por correo
+          </h1>
+          <p className="text-gray-600 mb-4 text-center">
+            Haz clic en el botón para generar y enviar un reporte de todos los informes guardados por correo electrónico.
+          </p>
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={enviarReportePorEmail}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Enviar reporte
+            </button>
+          </div>
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Reportes Guardados</h2>
+            <ReportesList />
+          </div>
+        </div>
+      </div>
+      <div className="mt-8">
+        <Footer developerName="Pablo Alejandro de la Iglesia" />
+      </div>
+    </div>
   );
 }
